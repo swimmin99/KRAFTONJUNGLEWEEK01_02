@@ -13,14 +13,13 @@ public class PlayerController : MonoBehaviour
     public float playerMoveSpeed;
     public float playerMaxSpeed;
     public Vector2 jumpDirection;
-    public bool isPlayerJump;
-    public bool isPlayerMove;
-    private bool isGrounded;
+    public bool playerOnGround;
+    private bool isJumping;
     public float jumpForce;
     public float jumpLimitTime;
     public int maxJumpStep;
     public float jumpTimer;
-
+    public int jumpLevel;
     public float minBackBounceX;
     public float maxBackBounceX;
 
@@ -30,8 +29,7 @@ public class PlayerController : MonoBehaviour
     public float maxBackBounceForce;
     public float minBackBounceForce;
 
-    public ForceGameController forceGameController;
-
+   
     public float minJumpValue;
 
     public Transform leg1;
@@ -44,15 +42,20 @@ public class PlayerController : MonoBehaviour
     public GameObject BounceEye;
     private bool BounceAnimOn = false;
 
+    public int MaxJumpLevel;
+    public GameObject lArm;
+    public GameObject rArm;
+    public float targetRotation;
     void Start()
     {
+        targetRotation = 0f;
         player = gameObject;
         playerRigid = gameObject.GetComponent<Rigidbody2D>();
     }
 
     void PlayerMove()
     {
-        if (isPlayerMove)
+        if (playerOnGround)
         {
             if (Input.GetKey(KeyCode.RightArrow))
             {
@@ -91,51 +94,42 @@ public class PlayerController : MonoBehaviour
 
     void PlayerJump()
     {
-        if (isPlayerJump)
+        if (playerOnGround)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                forceGameController.gameObject.SetActive(true);
-                forceGameController.IncreaseSpeedGauge(jumpLimitTime * 1.5f);
-                isGrounded = true;
+                isJumping = true;
             }
 
             if (Input.GetKey(KeyCode.Space))
             {
-                if(isGrounded)
+                if(isJumping)
                 {
-                    if (jumpTimer < jumpLimitTime)
-                    {
                         jumpTimer += Time.deltaTime;
-                        Debug.Log(jumpTimer);
+                        jumpTimer = Mathf.Clamp(jumpTimer, 0, 1f);
+                        jumpLevel = (int)(jumpTimer * MaxJumpLevel);
+                    switch (jumpLevel)
+                    {
+                        case 1: targetRotation = 15f;break;
+                        case 2: targetRotation = 30f;break;
+                        case 3: targetRotation = 45f; break;
+                        case 4: targetRotation = 60f; break;
+                        case 5: targetRotation = 75f; break;
                     }
+
+
                 }
             }
 
             if (Input.GetKeyUp(KeyCode.Space))
             {
-                isGrounded = false;
-                float interval = jumpLimitTime / (float)maxJumpStep;
-                float jumpStep = 0f;
-                for (int i = 0; i < maxJumpStep; i++)
-                {
-                    if (jumpTimer <= 0.05f)
-                    {
-                        jumpStep = 0.05f;
-                        break;
-                    }
-                    if (jumpStep - 0.05f <= jumpTimer && jumpStep + 0.05f >= jumpTimer)
-                    {
-                        break;
-                    }
-                    jumpStep += interval;
-                }
-                Debug.Log("jumpStep" + jumpStep);
-
-                Vector2 jumpForceVector = jumpDirection.normalized * jumpStep * jumpForce;
+                targetRotation = 0f;
+                isJumping = false;
+                print(jumpLevel);
+                Vector2 jumpForceVector = jumpDirection.normalized * jumpLevel/(float)MaxJumpLevel* jumpForce;
                 playerRigid.AddForce(jumpForceVector, ForceMode2D.Impulse);
                 jumpTimer = 0;
-
+                jumpLevel = 0;
             }
         }
 
@@ -208,14 +202,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void HideGaugeByVelocity()
+    void rotateArm()
     {
+        
+        lArm.transform.localRotation = Quaternion.Euler(0f, 0f, -1f*targetRotation);
+        rArm.transform.localRotation = Quaternion.Euler(0f, 0f, targetRotation);
 
-        if (playerRigid.velocity.y > minJumpValue)
-        {
-            forceGameController.InitGauge();
-            forceGameController.gameObject.SetActive(false);
-        }
     }
 
     void CheckEndingByPosX()
@@ -232,10 +224,7 @@ public class PlayerController : MonoBehaviour
     {
         LimitPlayerVelocity();
         PlayerJump();
-        HideGaugeByVelocity();
         CheckEndingByPosX();
-        // ControlPlayerGravityScale();
-
     }
 
 
@@ -243,5 +232,6 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         PlayerMove();
+        rotateArm();
     }
 }
