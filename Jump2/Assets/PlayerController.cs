@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     public int maxJumpStep;
     public float jumpTimer;
     public int jumpLevel;
+    public List <float> jumpValue = new List <float> {3.2f,3.2f,5.7f,5.7f,7.2f,7.4f,7.4f,9.3f};
+    
     public float minBackBounceX;
     public float maxBackBounceX;
 
@@ -41,6 +43,12 @@ public class PlayerController : MonoBehaviour
     private float BounceAnmiationTime = 0.2f;
     public GameObject BounceEye;
     private bool BounceAnimOn = false;
+
+    public float maxVerticalAdjustment = 1f; // Maximum additional force for trajectory adjustment
+    public float adjustmentSpeed = 2f; // Speed of adjustment
+
+
+
 
     public int MaxJumpLevel;
     public GameObject lArm;
@@ -103,18 +111,27 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKey(KeyCode.Space))
             {
-                if(isJumping)
+
+                playerRigid.bodyType = RigidbodyType2D.Static;
+
+                if (isJumping)
                 {
                         jumpTimer += Time.deltaTime;
-                        jumpTimer = Mathf.Clamp(jumpTimer, 0, 1f);
+                        jumpTimer = Mathf.Clamp(jumpTimer, 0, 1.5f);
                         jumpLevel = (int)(jumpTimer * MaxJumpLevel);
+
+                    print(jumpLevel);
+
                     switch (jumpLevel)
                     {
+                        case 0: targetRotation = 15f; break;
                         case 1: targetRotation = 15f;break;
-                        case 2: targetRotation = 30f;break;
+                        case 2: targetRotation = 45f; break;
                         case 3: targetRotation = 45f; break;
-                        case 4: targetRotation = 60f; break;
-                        case 5: targetRotation = 75f; break;
+                        case 4: targetRotation = 65f; break;
+                        case 5: targetRotation = 65f; break;
+                        case 6: targetRotation = 65f; break;
+                        case 7: targetRotation = 90f; break;
                     }
 
 
@@ -123,10 +140,12 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKeyUp(KeyCode.Space))
             {
+                print("buttonUp");
+                playerRigid.bodyType = RigidbodyType2D.Dynamic;
                 targetRotation = 0f;
                 isJumping = false;
                 print(jumpLevel);
-                Vector2 jumpForceVector = jumpDirection.normalized * jumpLevel/(float)MaxJumpLevel* jumpForce;
+                Vector2 jumpForceVector = jumpDirection.normalized * jumpValue[jumpLevel];
                 playerRigid.AddForce(jumpForceVector, ForceMode2D.Impulse);
                 jumpTimer = 0;
                 jumpLevel = 0;
@@ -142,10 +161,21 @@ public class PlayerController : MonoBehaviour
         Vector2 randomDirection = new Vector2(randomDirectionX, randomDirectionY);
         float randomJumpForce = Random.Range(minBackBounceForce, maxBackBounceForce);
         Debug.Log("nowForce : " + randomJumpForce);
-        Vector2 jumpForceVector = randomDirection.normalized *randomJumpForce;
+        Vector2 jumpForceVector = randomDirection.normalized * randomJumpForce;
 
         playerRigid.AddForce(jumpForceVector, ForceMode2D.Impulse);
     }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+
+        Gizmos.DrawLine(transform.position + new Vector3(minBackBounceX, minBackBounceX), transform.position);
+
+    }
+
+
 
     IEnumerator BounceAnimation()
     {
@@ -156,6 +186,9 @@ public class PlayerController : MonoBehaviour
         BounceAnimOn = false;
 
     }
+
+   
+
 
     void OnCollisionStay2D(Collision2D other)
     {
@@ -223,8 +256,9 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         LimitPlayerVelocity();
-        PlayerJump();
         CheckEndingByPosX();
+        PlayerJump();
+
     }
 
 
@@ -233,5 +267,7 @@ public class PlayerController : MonoBehaviour
     {
         PlayerMove();
         rotateArm();
+
     }
+
 }
