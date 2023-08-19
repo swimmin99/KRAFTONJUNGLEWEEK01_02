@@ -3,40 +3,27 @@ using UnityEngine;
 [RequireComponent(typeof(EdgeCollider2D))]
 public class EdgeCollidrVisualizerGame : MonoBehaviour
 {
-    private EdgeCollider2D edgeCollider;
-    private LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
+    public EdgeCollider2D edgeCollider;
 
-    private void Start()
+    void Start()
     {
-        edgeCollider = GetComponent<EdgeCollider2D>();
-
-        lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.startColor = Color.green;
-        lineRenderer.endColor = Color.green;
-        lineRenderer.startWidth = 0.05f;
-        lineRenderer.endWidth = 0.05f;
-
-        UpdateLineRenderer();
-    }
-
-    private void Update()
-    {
-        UpdateLineRenderer();
-    }
-
-    private void UpdateLineRenderer()
-    {
-        if (edgeCollider == null || lineRenderer == null)
-            return;
-
-        Vector2[] points = edgeCollider.points;
-
-        lineRenderer.positionCount = points.Length;
-
-        for (int i = 0; i < points.Length; i++)
+        if (lineRenderer == null || edgeCollider == null)
         {
-            lineRenderer.SetPosition(i, points[i]);
+            Debug.LogError("LineRenderer or EdgeCollider2D not assigned!");
+            return;
         }
+
+        Vector2[] points2D = edgeCollider.points;
+        Vector3[] points3D = new Vector3[points2D.Length];
+
+        for (int i = 0; i < points2D.Length; i++)
+        {
+            points3D[i] = new Vector3(points2D[i].x, points2D[i].y, 0f);
+        }
+
+        lineRenderer.positionCount = points3D.Length;
+        lineRenderer.SetPositions(points3D);
     }
+
 }

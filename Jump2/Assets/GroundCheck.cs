@@ -13,8 +13,8 @@ public class GroundCheck : MonoBehaviour
     {
         LayerMask groundLayer = LayerMask.GetMask("Ground");
 
-        RaycastHit2D hitLeft = Physics2D.Raycast(new Vector3(transform.position.x - raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), Vector2.down, raycastDistance, groundLayer);
-        RaycastHit2D hitRight = Physics2D.Raycast(new Vector3(transform.position.x + raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), Vector2.down, raycastDistance, groundLayer);
+        RaycastHit2D hitLeft = Physics2D.Raycast(new Vector3(transform.position.x - raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), Vector2.down, raycastAmount, groundLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(new Vector3(transform.position.x + raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), Vector2.down, raycastAmount, groundLayer);
 
         if (hitLeft.collider == null && hitRight.collider == null)
         {
@@ -29,7 +29,7 @@ public class GroundCheck : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.red;
 
         Gizmos.DrawLine(new Vector3(transform.position.x - raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), new Vector3(transform.position.x - raycastDistance, transform.position.y - raycastStartPosition - raycastAmount, transform.position.z));
         Gizmos.DrawLine(new Vector3(transform.position.x + raycastDistance, transform.position.y - raycastStartPosition, transform.position.z), new Vector3(transform.position.x + raycastDistance, transform.position.y - raycastStartPosition - raycastAmount, transform.position.z));
