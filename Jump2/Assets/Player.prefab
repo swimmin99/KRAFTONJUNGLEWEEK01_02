@@ -752,7 +752,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3639921151322258685}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: LArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1302,7 +1302,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2424177758478587907}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: RArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2021,6 +2021,7 @@ MonoBehaviour:
   BounceEye: {fileID: 7949374451725600481}
   maxVerticalAdjustment: 1
   adjustmentSpeed: 2
+  playerCanMove: 1
   MaxJumpLevel: 5
   lArm: {fileID: 2268164151113260371}
   rArm: {fileID: 6235069979305170960}
