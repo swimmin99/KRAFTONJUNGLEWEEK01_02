@@ -139,20 +139,20 @@ void PlayerMove()
     {
         if (playerOnGround)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetButtonDown("Jump"))
             {
+                print("Detected");
                 isJumping = true;
                 playerCanMove = false;
             }
 
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetButton("Jump") && isJumping)
             {
-                if (isJumping)
-                {
-                        jumpTimer += Time.deltaTime;
-                        jumpTimer = Mathf.Clamp(jumpTimer, 0, 1.5f);
-                        jumpLevel = (int)(jumpTimer * MaxJumpLevel);
-
+                
+                    jumpTimer += Time.deltaTime;
+                    print(jumpTimer);
+                    jumpTimer = Mathf.Clamp(jumpTimer, 0, 1.5f);
+                    jumpLevel = (int)(jumpTimer * MaxJumpLevel);
                     print(jumpLevel);
 
                     switch (jumpLevel)
@@ -167,12 +167,11 @@ void PlayerMove()
                         case 7: targetRotation = 90f; break;
                     }
 
-
-                }
             }
 
-            if (Input.GetKeyUp(KeyCode.Space))
+            if (Input.GetButtonUp("Jump") && isJumping)
             {
+                print("up");
                 playerCanMove = true;
                 targetRotation = 0f;
                 isJumping = false;
@@ -218,6 +217,10 @@ void PlayerMove()
     }
 
 
+    public void playAnimation()
+    {
+        StartCoroutine(BounceAnimation());
+    }
 
     IEnumerator BounceAnimation()
     {
@@ -244,6 +247,10 @@ void PlayerMove()
         } else if (other.gameObject.CompareTag("TargetBouncer"))
         {
             PlayerBounceBack(true);
+            if (BounceAnimOn == false)
+            {
+                StartCoroutine(BounceAnimation());
+            }
         }
     }
 

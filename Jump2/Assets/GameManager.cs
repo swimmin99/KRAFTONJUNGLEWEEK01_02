@@ -62,8 +62,7 @@ public class GameManager : MonoBehaviour
 
     public void GameRestart()
     {
-        playerPos.position = startPos;
-        Camera.main.GetComponent<CameraController>().enabled=true;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(gameObject.scene.name);
         onClickedStartButton();
     }
 

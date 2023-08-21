@@ -36,11 +36,24 @@ public class Breaker : MonoBehaviour
         }
     }
 
-   
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isBroken && collision.gameObject.CompareTag("Player"))
+        {
+            animationObject[currentCollisionCount].SetActive(false);
+            currentCollisionCount++;
+            animationObject[currentCollisionCount].SetActive(true);
+            if (currentCollisionCount >= collisionCountToBreak)
+            {
+                BreakObject();
+            }
+        }
+    }
 
 
 
-        void BreakObject()
+
+    void BreakObject()
         {
             isBroken = true;
 

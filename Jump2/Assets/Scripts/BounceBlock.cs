@@ -47,6 +47,7 @@ public class BounceBlock : MonoBehaviour
         rg.velocity = Vector2.zero;
         if (toTarget)
         {
+            rg.velocity = Vector2.zero;
             directionX = target.position.x - transform.position.x;
             directionY = target.position.y - transform.position.y;
         }

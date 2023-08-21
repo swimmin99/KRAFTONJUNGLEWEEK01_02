@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
-[ExecuteAlways]
 public class waterShaper : MonoBehaviour
 {
 
@@ -12,8 +11,6 @@ public class waterShaper : MonoBehaviour
     private GameObject wavePointPref;
     [SerializeField]
     private GameObject wavePoints;
-    [SerializeField]
-    private int wavePointsNum;
     [SerializeField]
     [Range(1, 100)]
     private int WavesCount;
@@ -33,13 +30,12 @@ public class waterShaper : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = WavesCount;
-
-
-    }
-    void OnValidate()
-    {
         StartCoroutine(CreateWaves());
+
     }
+
+    
+
     IEnumerator CreateWaves()
     {
         foreach (Transform child in wavePoints.transform)
@@ -70,9 +66,6 @@ public class waterShaper : MonoBehaviour
 
     private void SetWaves()
     {
-        int waterPointsCount = wavePointsNum;
-
-
         springs = new();
         for (int i = 0; i < WavesCount; i++)
         {
@@ -109,7 +102,6 @@ public class waterShaper : MonoBehaviour
             foreach (waterSpring waterSpringComponent in springs)
             {
                 waterSpringComponent.WaveSpringUpdate(springStiffness, dampening);
-                waterSpringComponent.WavePointUpdate();
             }
         }
 

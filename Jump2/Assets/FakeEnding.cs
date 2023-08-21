@@ -26,7 +26,7 @@ public class FakeEnding : MonoBehaviour
         yield return new WaitForSeconds(3f);
         targetCamera.Follow = player.transform;
         player.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1.5f) * 270f);
-        player.GetComponent<PlayerController>().playerCanMove = true;
+        player.GetComponent<PlayerController>().enabled = true;
 
         yield return new WaitForSeconds(2f);
 
@@ -40,7 +40,9 @@ public class FakeEnding : MonoBehaviour
             targetCamera.Follow = endingText.transform;
             endSequence.Play();
             player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            player.GetComponent<PlayerController>().playerCanMove = false;
+            player.GetComponent<PlayerController>().playAnimation();
+            player.GetComponent<PlayerController>().enabled = false;
+            
             
         }
     }

@@ -12,23 +12,8 @@ public class waterSpring : MonoBehaviour
     // normal height
     private float target_height = 0.1f;
     public Transform springTransform;
-    [SerializeField]
-    private static SpriteShapeController spriteShapeController = null;
-    private int waveIndex = 0;
-    private List<waterSpring> springs = new();
-    public void Init(SpriteShapeController ssc)
-    {
 
-        var index = transform.GetSiblingIndex();
-        waveIndex = index + 1;
 
-        spriteShapeController = ssc;
-        velocity = 0;
-        height = transform.localPosition.y;
-        target_height = transform.localPosition.y;
-    }
-    // with dampening
-    // adding the dampening to the force
     public void WaveSpringUpdate(float springStiffness, float dampening)
     {
         height = transform.localPosition.y;
@@ -42,16 +27,7 @@ public class waterSpring : MonoBehaviour
         transform.localPosition = new Vector3(transform.localPosition.x, y + velocity, transform.localPosition.z);
 
     }
-    public void WavePointUpdate()
-    {
-        if (spriteShapeController != null)
-        {
-            Spline waterSpline = spriteShapeController.spline;
-            print(waveIndex);
-            Vector3 wavePosition = waterSpline.GetPosition(waveIndex);
-            waterSpline.SetPosition(waveIndex, new Vector3(wavePosition.x, transform.localPosition.y, wavePosition.z));
-        }
-    }
+   
 
     
 }
