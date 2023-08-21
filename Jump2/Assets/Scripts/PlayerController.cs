@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -59,6 +60,8 @@ public class PlayerController : MonoBehaviour
     private CapsuleCollider2D capsuleCollider;
     private float targetScale = 0.95f;
     private float duration = 2f;
+
+    public CinemachineImpulseSource impSource;
 
 
     void Start()
@@ -183,19 +186,27 @@ void PlayerMove()
 
     }
 
-    void PlayerBounceBack()
+    void PlayerBounceBack(bool animationOnly)
     {
+        impSource.GenerateImpulse(0.1f);
 
         CancelJump();
-        float randomDirectionX = Random.Range(minBackBounceX, maxBackBounceX);
-        float randomDirectionY = Random.Range(minBackBounceY, maxBackBounceY);
-        Vector2 randomDirection = new Vector2(randomDirectionX, randomDirectionY);
-        float randomJumpForce = Random.Range(minBackBounceForce, maxBackBounceForce);
-        Debug.Log("nowForce : " + randomJumpForce);
-        Vector2 jumpForceVector = randomDirection.normalized * randomJumpForce;
+        if (animationOnly == false)
+        {
+            float randomDirectionX = Random.Range(minBackBounceX, maxBackBounceX);
+            float randomDirectionY = Random.Range(minBackBounceY, maxBackBounceY);
+            Vector2 randomDirection = new Vector2(randomDirectionX, randomDirectionY);
+            float randomJumpForce = Random.Range(minBackBounceForce, maxBackBounceForce);
+            Debug.Log("nowForce : " + randomJumpForce);
+            Vector2 jumpForceVector = randomDirection.normalized * randomJumpForce;
+            playerRigid.AddForce(jumpForceVector, ForceMode2D.Impulse);
 
-        playerRigid.AddForce(jumpForceVector, ForceMode2D.Impulse);
+
+        }
+        impSource.GenerateImpulse(0.1f);
     }
+
+  
 
 
     private void OnDrawGizmos()
@@ -221,29 +232,21 @@ void PlayerMove()
    
 
 
-    void OnCollisionStay2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            PlayerBounceBack();
-            if (BounceAnimOn == false)
-            {
-                StartCoroutine(BounceAnimation());
-            }
-        }
-    }
-
     void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
-            PlayerBounceBack();
+            PlayerBounceBack(false);
             if (BounceAnimOn == false)
             {
                 StartCoroutine(BounceAnimation());
             }
+        } else if (other.gameObject.CompareTag("TargetBouncer"))
+        {
+            PlayerBounceBack(true);
         }
     }
+
 
     void LimitPlayerVelocity()
     {
@@ -274,20 +277,10 @@ void PlayerMove()
 
     }
 
-    void CheckEndingByPosX()
-    {
-        if(transform.position.x> 412.75f)
-        {
-            gameObject.GetComponent<PlayerEndingController>().EndingPlay();
-            gameObject.GetComponent<PlayerController>().enabled = false;
-            Camera.main.GetComponent<CameraController>().enabled = false;
-            Camera.main.transform.position = new Vector3(431.5f, 1.8f, -10);
-        }
-    }
+   
     void Update()
     {
         LimitPlayerVelocity();
-        CheckEndingByPosX();
         PlayerJump();
 
     }

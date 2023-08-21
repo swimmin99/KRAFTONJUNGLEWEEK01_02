@@ -3,33 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using Cinemachine;
 
 public class PlayerEndingController : MonoBehaviour
 {
     private Sequence endSequence;
     public TextMeshProUGUI endingText;
     public TextMeshProUGUI creditText;
-    public Vector3 endingPos;
+    public Transform endingPos;
     public GameManager GameManager;
-
+    public PlayerController playerController;
+    public GameObject cameraLoc;
+    public GameObject playerObj;
     public Transform leg1;
     public Transform leg2;
 
     private bool isWalking = false;
     private bool isEnd=false;
-    void Start()
+
+    [SerializeField]
+    CinemachineVirtualCamera targetCamera;
+    //  targetCamera.Follow = GameObject.FindGameObjectWithTag("Player").transform;
+    private void Start()
     {
         endSequence = DOTween.Sequence().Pause()
-            .Append(transform.DOMove(endingPos, 10f))
-            .Append(endingText.DOFade(1f, 3f))
-            .Append(endingText.DOFade(1f, 3f))
-            .Append(endingText.DOFade(0f, 3f))
-            .Append(creditText.DOFade(1f, 3f))
-            .Append(creditText.DOFade(0f, 3f))
-            .OnComplete(() => GameManager.ActiveEndUI());
-
+           .Append(playerObj.transform.DOMove(endingPos.position, 10f).OnComplete(() =>
+           {
+               targetCamera.Follow = cameraLoc.transform;
+           }) )
+           .Append(endingText.DOFade(1f, 3f))
+           .Append(endingText.DOFade(1f, 3f))
+           .Append(endingText.DOFade(0f, 3f))
+           .Append(creditText.DOFade(1f, 3f))
+           .Append(creditText.DOFade(0f, 3f))
+           .OnComplete(() => GameManager.ActiveEndUI());
 
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            EndingPlay();
+            playerController.enabled = false;
+        }
+    }
+
+
 
     private void MoveLeg(Transform leg1, Transform leg2, float MoveAngleAbs)
     {

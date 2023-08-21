@@ -8,7 +8,6 @@ using UnityEngine.U2D;
 public class waterShaper : MonoBehaviour
 {
 
-    private int CorsnersCount = 2;
     [SerializeField]
     private GameObject wavePointPref;
     [SerializeField]
