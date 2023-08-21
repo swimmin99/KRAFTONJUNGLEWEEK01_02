@@ -16,17 +16,10 @@ public class HidingEnemyController : MonoBehaviour
     private bool isAnimating = false;
     PolygonCollider2D myPolygonCollider;
     BoxCollider2D myBoxCollider;
-    Collider2D myCollider;
 
     private void Start()
     {
-        myPolygonCollider = GetComponent<PolygonCollider2D>();
-        myCollider = myPolygonCollider;
-        if (myPolygonCollider == null)
-        {
-            myBoxCollider = GetComponent<BoxCollider2D>();
-            myCollider = myBoxCollider;
-        }
+        myBoxCollider = GetComponent<BoxCollider2D>();
         Invoke("StartAnimation", initialWaitTime);
     }
 
@@ -41,16 +34,19 @@ public class HidingEnemyController : MonoBehaviour
     private void HideTrap()
     {
         isAnimating = true;
-        transform.DOScale(new Vector3(0,0.1f,0), hideTime).OnComplete(() =>
-        {
-            myCollider.enabled = false;
+        transform.DOScale(new Vector3(0, 0.5f, 0), hideTime/2f).OnComplete(() =>
+          {
+              myBoxCollider.enabled = false;
+              transform.DOScale(Vector3.zero, hideTime/2f).OnComplete(() =>
+              {
+                  StartCoroutine(WaitHide(hideWaitTime));
+              });
 
-            StartCoroutine(Wait1(hideWaitTime));
-
-        });
+          });
+        
     }
 
-    IEnumerator Wait1(float time)
+    IEnumerator WaitHide(float time)
     {
         yield return new WaitForSeconds(time);
         ShowTrap();
@@ -59,19 +55,17 @@ public class HidingEnemyController : MonoBehaviour
 
     private void ShowTrap()
     {
-        myCollider.enabled = true;
+        myBoxCollider.enabled = true;
 
         transform.DOScale(Vector3.one, showTime).OnComplete(() =>
         {
-
             isAnimating = false;
-
-            StartCoroutine(Wait2(showWaitTime));
+            StartCoroutine(WaitShow(showWaitTime));
 
         });
     }
 
-    IEnumerator Wait2(float time)
+    IEnumerator WaitShow(float time)
     {
         yield return new WaitForSeconds(time);
         Invoke("HideTrap", hideTime);
